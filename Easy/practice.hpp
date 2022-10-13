@@ -135,3 +135,88 @@ int *twoSum(int *nums, int numsSize, int target, int *returnSize)
 	return NULL;
 }
 
+#define MAX_LEN 100000 // the amount of buckets
+#include <vector>
+class MyHashMap
+{
+private:
+	// vector容器，类似数组，这个就像是存放了键值对的数组。
+	// pair<int, int>，根据第一个元素（key）,可快速找到第二个元素（value）
+	// map是做什么用的？
+	vector<pair<int, int>> map[MAX_LEN]; // hash map implemented by array
+
+	/** Returns the corresponding bucket index. */ // y为索引，x为键值
+	int getIndex(int key)
+	{
+		return key % MAX_LEN;
+	}
+
+	/** Search the key in a specific bucket. Returns -1 if the key does not existed. */
+	int getPos(int key, int index)//这个函数的作用是为了在对应的桶中找到key的位置
+	{
+		// Each bucket contains a vector. Iterate all the elements in the bucket to find the target key.
+		for (int i = 0; i < map[index].size(); ++i)//map[index]为index（索引，y）对应的桶，桶中可能包含了许多键值（x）,用vector容器来保存这些键值
+		{
+			if (map[index][i].first == key)
+			{
+				return i;//返回该桶中键值所在vector容器（也就是该桶中所有键值组成的数组）中的位置
+			}
+		}
+		return -1;
+	}
+
+public:
+	/** Initialize your data structure here. */
+	MyHashMap() //构造函数
+	{
+	}
+
+	/** value will always be positive. */
+	void put(int key, int value)
+	{
+		int index = getIndex(key);//得到键值放的容器（Index）
+		int pos = getPos(key, index);
+		if (pos < 0)  //如果key值没有成功放到对应的桶中，直接创建一个键值对进行插入
+		{
+			map[index].push_back(make_pair(key, value));//尾插入刚创建的键值对
+		}
+		else  //如果放成功了，让键值对key对应的值为输入的value
+		{
+			map[index][pos].second = value;
+		}
+	}
+
+	/** Returns the value to which the specified key is mapped, or -1 if this map contains no mapping for the key */
+	int get(int key)
+	{
+		int index = getIndex(key);
+		int pos = getPos(key, index);
+		if (pos < 0)
+		{
+			return -1;
+		}
+		else
+		{
+			return map[index][pos].second;
+		}
+	}
+
+	/** Removes the mapping of the specified value key if this map contains a mapping for the key */
+	void remove(int key)
+	{
+		int index = getIndex(key);
+		int pos = getPos(key, index);
+		if (pos >= 0)
+		{
+			map[index].erase(map[index].begin() + pos);
+		}
+	}
+};
+
+/**
+ * Your MyHashMap object will be instantiated and called as such:
+ * MyHashMap obj = new MyHashMap();
+ * obj.put(key,value);
+ * int param_2 = obj.get(key);
+ * obj.remove(key);
+ */

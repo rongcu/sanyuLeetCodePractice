@@ -145,6 +145,7 @@ private:
 	// map是做什么用的？
 	vector<pair<int, int>> map[MAX_LEN]; // hash map implemented by array
 
+    //以下这两个函数是非常重要的，是下面的基础，设计类时应该想到以此为基础
 	/** Returns the corresponding bucket index. */ // y为索引，x为键值
 	int getIndex(int key)
 	{

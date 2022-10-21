@@ -145,6 +145,7 @@ private:
 	// map是做什么用的？
 	vector<pair<int, int>> map[MAX_LEN]; // hash map implemented by array
 
+	//先得到对应的桶
     //以下这两个函数是非常重要的，是下面的基础，设计类时应该想到以此为基础
 	/** Returns the corresponding bucket index. */ // y为索引，x为键值
 	int getIndex(int key)
@@ -152,13 +153,14 @@ private:
 		return key % MAX_LEN;
 	}
 
+	//再得到桶中对应的位置，这个位置上的first为key,second为value
 	/** Search the key in a specific bucket. Returns -1 if the key does not existed. */
 	int getPos(int key, int index)//这个函数的作用是为了在对应的桶中找到key的位置
 	{
 		// Each bucket contains a vector. Iterate all the elements in the bucket to find the target key.
 		for (int i = 0; i < map[index].size(); ++i)//map[index]为index（索引，y）对应的桶，桶中可能包含了许多键值（x）,用vector容器来保存这些键值
 		{
-			if (map[index][i].first == key)
+			if (map[index][i].first == key)  //first为key,second为value
 			{
 				return i;//返回该桶中键值所在vector容器（也就是该桶中所有键值组成的数组）中的位置
 			}
@@ -220,4 +222,66 @@ public:
  * obj.put(key,value);
  * int param_2 = obj.get(key);
  * obj.remove(key);
+ */
+
+
+
+#define MAX_LEN 100000          // the amount of buckets
+class MyHashSet {
+private:
+    vector<int> set[MAX_LEN];   // hash set implemented by array
+    
+    /** Returns the corresponding bucket index. */
+    int getIndex(int key) {
+        return key % MAX_LEN;
+    }
+    
+    /** Search the key in a specific bucket. Returns -1 if the key does not existed. */
+    int getPos(int key, int index) {
+        // Each bucket contains a list. Iterate all the elements in the bucket to find the target key.
+        for (int i = 0; i < set[index].size(); ++i) {
+            if (set[index][i] == key) {
+                return i;
+            }
+        }
+        return -1;
+    }
+public:
+    /** Initialize your data structure here. */
+    MyHashSet() {
+        
+    }
+    
+    void add(int key) {
+        int index = getIndex(key);
+        int pos = getPos(key, index);
+        if (pos < 0) {
+            // Add new key if key does not exist.
+            set[index].push_back(key);
+        }
+    }
+    
+    void remove(int key) {
+        int index = getIndex(key);
+        int pos = getPos(key, index);
+        if (pos >= 0) {
+            // Remove the key if key exists.
+            set[index].erase(set[index].begin() + pos);
+        }
+    }
+    
+    /** Returns true if this set did not already contain the specified element */
+    bool contains(int key) {
+        int index = getIndex(key);
+        int pos = getPos(key, index);
+        return pos >= 0;
+    }
+};
+
+/**
+ * Your MyHashSet object will be instantiated and called as such:
+ * MyHashSet obj = new MyHashSet();
+ * obj.add(key);
+ * obj.remove(key);
+ * bool param_3 = obj.contains(key);
  */
